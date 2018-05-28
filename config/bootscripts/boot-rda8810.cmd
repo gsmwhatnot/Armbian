@@ -8,7 +8,7 @@ setenv verbosity "1"
 
 if test "${boot_device}" = "mmc"; then
 
-	setenv rootdev "/dev/mmcblk0p2"
+	setenv rootdev "/dev/mmcblk0p3"
 	setenv rootfstype "ext4"
 
 	if ext2load mmc 0:1 ${load_addr} armbianEnv.txt; then
