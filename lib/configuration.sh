@@ -168,12 +168,7 @@ case $RELEASE in
 	;;
 
 	xenial)
-		# Remove zram-config if board is "Orange Pi 2G-IOT"
-		if [[ $BOARD_NAME == "Orange Pi 2G-IOT" ]]; then
-			PACKAGE_LIST_RELEASE="man-db wget nano"
-		else
-			PACKAGE_LIST_RELEASE="man-db wget nano zram-config"
-		fi
+		PACKAGE_LIST_RELEASE="man-db wget nano zram-config"
 		PACKAGE_LIST_DESKTOP+=" paman libgcr-3-common gcj-jre-headless paprefs numix-icon-theme"
 		PACKAGE_LIST_DESKTOP_RECOMMENDS+=" chromium-browser language-selector-gnome system-config-printer-common system-config-printer-gnome"
 	;;
