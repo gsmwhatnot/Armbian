@@ -359,15 +359,29 @@ prepare_partitions()
 
 	# stage: create partition table
 	display_alert "Creating partitions" "${bootfs:+/boot: $bootfs }root: $ROOTFS_TYPE" "info"
-	parted -s ${SDCARD}.raw -- mklabel msdos
 	if [[ $ROOTFS_TYPE == nfs ]]; then
 		# single /boot partition
+		parted -s ${SDCARD}.raw -- mklabel msdos
 		parted -s ${SDCARD}.raw -- mkpart primary ${parttype[$bootfs]} ${bootstart}s -1s
 	elif [[ $BOOTSIZE == 0 ]]; then
 		# single root partition
+		parted -s ${SDCARD}.raw -- mklabel msdos
 		parted -s ${SDCARD}.raw -- mkpart primary ${parttype[$ROOTFS_TYPE]} ${rootstart}s -1s
+	elif [[ $BOARD_NAME == "Orange Pi 2G-IOT" ]]; then
+		# /boot partition + root partition + factorydata partition
+		display_alert "Creating partitions" "${bootfs:+/boot: $bootfs }root: $ROOTFS_TYPE factorydata" "info"
+		factorystart=$((($sdsize * 2048) - ( 2 * 2048 )))
+		local rootend=$(($factorystart - 1))
+		parted -s ${SDCARD}.raw -- mklabel gpt
+		parted -s ${SDCARD}.raw -- mkpart primary ${parttype[$bootfs]} ${bootstart}s ${bootend}s
+		parted -s ${SDCARD}.raw -- mkpart primary ${parttype[$ROOTFS_TYPE]} ${rootstart}s ${rootend}s
+		parted -s ${SDCARD}.raw -- mkpart primary ${parttype[$bootfs]} ${factorystart}s 100%
+		parted -s ${SDCARD}.raw -- name 1 boot
+		parted -s ${SDCARD}.raw -- name 2 root
+		parted -s ${SDCARD}.raw -- name 3 factorydata
 	else
 		# /boot partition + root partition
+		parted -s ${SDCARD}.raw -- mklabel msdos
 		parted -s ${SDCARD}.raw -- mkpart primary ${parttype[$bootfs]} ${bootstart}s ${bootend}s
 		parted -s ${SDCARD}.raw -- mkpart primary ${parttype[$ROOTFS_TYPE]} ${rootstart}s -1s
 	fi
