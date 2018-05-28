@@ -202,16 +202,17 @@ install_common()
 	sed -i 's/#\?PubkeyAuthentication .*/PubkeyAuthentication yes/' $SDCARD/etc/ssh/sshd_config
 
 	# configure network manager
-	sed "s/managed=\(.*\)/managed=true/g" -i $SDCARD/etc/NetworkManager/NetworkManager.conf
+	# Disabled because we are not using network-manager
+	# sed "s/managed=\(.*\)/managed=true/g" -i $SDCARD/etc/NetworkManager/NetworkManager.conf
 	# disable DNS management withing NM for !Stretch
-	[[ $RELEASE != stretch ]] && sed "s/\[main\]/\[main\]\ndns=none/g" -i $SDCARD/etc/NetworkManager/NetworkManager.conf
-	if [[ -n $NM_IGNORE_DEVICES ]]; then
-		mkdir -p $SDCARD/etc/NetworkManager/conf.d/
-		cat <<-EOF > $SDCARD/etc/NetworkManager/conf.d/10-ignore-interfaces.conf
-		[keyfile]
-		unmanaged-devices=$NM_IGNORE_DEVICES
-		EOF
-	fi
+	#[[ $RELEASE != stretch ]] && sed "s/\[main\]/\[main\]\ndns=none/g" -i $SDCARD/etc/NetworkManager/NetworkManager.conf
+	#if [[ -n $NM_IGNORE_DEVICES ]]; then
+	#	mkdir -p $SDCARD/etc/NetworkManager/conf.d/
+	#	cat <<-EOF > $SDCARD/etc/NetworkManager/conf.d/10-ignore-interfaces.conf
+	#	[keyfile]
+	#	unmanaged-devices=$NM_IGNORE_DEVICES
+	#	EOF
+	#fi
 }
 
 install_distribution_specific()
