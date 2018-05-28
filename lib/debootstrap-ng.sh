@@ -316,7 +316,17 @@ prepare_partitions()
 		local rootpart=1
 		BOOTSIZE=0
 	fi
-
+	
+	# Partition override for Orange Pi 2G-IOT
+	if [[ $BOARD_NAME == "Orange Pi 2G-IOT" ]]; then 
+		# 3 partition setup with forced /boot type
+		local bootfs=$BOOTFS_TYPE
+		local bootpart=1
+		local factorypart=2
+		local rootpart=3
+		[[ -z $BOOTSIZE || $BOOTSIZE -le 8 ]] && BOOTSIZE=64 # MiB
+	fi
+	
 	# stage: calculate rootfs size
 	local rootfs_size=$(du -sm $SDCARD/ | cut -f1) # MiB
 	display_alert "Current rootfs size" "$rootfs_size MiB" "info"
@@ -419,6 +429,14 @@ prepare_partitions()
 		mount ${fscreateopt} $rootdevice $MOUNT/
 		local rootfs="UUID=$(blkid -s UUID -o value $rootdevice)"
 		echo "$rootfs / ${mkfs[$ROOTFS_TYPE]} defaults,noatime,nodiratime${mountopts[$ROOTFS_TYPE]} 0 1" >> $SDCARD/etc/fstab
+	fi
+	if [[ -n $factorypart ]]; then
+		display_alert "Creating factorydata" "$bootfs"
+		check_loop_device "${LOOP}p${factorypart}"
+		mkfs.${mkfs[$bootfs]} ${mkopts[$bootfs]} ${LOOP}p${factorypart}
+		#mkdir -p $MOUNT/boot/
+		#mount ${LOOP}p${bootpart} $MOUNT/boot/
+		#echo "UUID=$(blkid -s UUID -o value ${LOOP}p${bootpart}) /boot ${mkfs[$bootfs]} defaults${mountopts[$bootfs]} 0 2" >> $SDCARD/etc/fstab
 	fi
 	if [[ -n $bootpart ]]; then
 		display_alert "Creating /boot" "$bootfs"
