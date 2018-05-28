@@ -120,12 +120,12 @@ PACKAGE_LIST="bc bridge-utils build-essential cpufrequtils device-tree-compiler 
 
 
 # Non-essential packages
-# Remove alsa-utils
+# Remove alsa-utils network-manager
 # Add minicom
 PACKAGE_LIST_ADDITIONAL="armbian-firmware btrfs-tools dosfstools iotop iozone3 stress sysbench screen \
 	ntfs-3g vim pciutils evtest htop pv lsof apt-transport-https libfuse2 libdigest-sha-perl \
 	libproc-processtable-perl aptitude dnsutils f3 haveged hdparm rfkill vlan sysstat bash-completion \
-	hostapd git ethtool network-manager unzip ifenslave command-not-found libpam-systemd iperf3 \
+	hostapd git ethtool unzip ifenslave command-not-found libpam-systemd iperf3 \
 	software-properties-common libnss-myhostname f2fs-tools avahi-autoipd iputils-arping qrencode minicom"
 
 
@@ -168,7 +168,12 @@ case $RELEASE in
 	;;
 
 	xenial)
-		PACKAGE_LIST_RELEASE="man-db wget nano zram-config"
+		# Remove zram-config if board is "Orange Pi 2G-IOT"
+		if [[ $BOARD_NAME == "Orange Pi 2G-IOT" ]]; then
+			PACKAGE_LIST_RELEASE="man-db wget nano"
+		else
+			PACKAGE_LIST_RELEASE="man-db wget nano zram-config"
+		fi
 		PACKAGE_LIST_DESKTOP+=" paman libgcr-3-common gcj-jre-headless paprefs numix-icon-theme"
 		PACKAGE_LIST_DESKTOP_RECOMMENDS+=" chromium-browser language-selector-gnome system-config-printer-common system-config-printer-gnome"
 	;;
