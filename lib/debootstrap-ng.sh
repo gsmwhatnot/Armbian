@@ -370,7 +370,7 @@ prepare_partitions()
 	elif [[ $BOARD_NAME == "Orange Pi 2G-IOT" ]]; then
 		# /boot partition + root partition + factorydata partition
 		display_alert "Creating partitions" "${bootfs:+/boot: $bootfs }root: $ROOTFS_TYPE factorydata" "info"
-		factorystart=$((($sdsize * 2048) - ( 2 * 2048 )))
+		local factorystart=$((($sdsize * 2048) - (2 * 2048)))
 		local rootend=$(($factorystart - 1))
 		parted -s ${SDCARD}.raw -- mklabel gpt
 		parted -s ${SDCARD}.raw -- mkpart primary ${parttype[$bootfs]} ${bootstart}s ${bootend}s
