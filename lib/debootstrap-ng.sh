@@ -383,7 +383,7 @@ prepare_partitions()
 		local bootstart=$(($OFFSET * 2048))
 		local bootend=$(($bootstart + ($BOOTSIZE * 2048) - 1))
 		local factorystart=$(($bootend + 1))
-		local factoryend=$(($factorystart + (2 * 2048) - 1))
+		local factoryend=$(($factorystart + (2 * 2048))) # factory image is 2 * 2048 + 1 sectors
 		local rootstart=$(($factoryend + 1))
 		parted -s ${SDCARD}.raw -- mklabel gpt
 		parted -s ${SDCARD}.raw -- mkpart primary ${parttype[$bootfs]} ${bootstart}s ${bootend}s
@@ -433,10 +433,7 @@ prepare_partitions()
 	if [[ -n $factorypart ]]; then
 		display_alert "Creating factorydata" "$bootfs"
 		check_loop_device "${LOOP}p${factorypart}"
-		mkfs.${mkfs[$bootfs]} ${mkopts[$bootfs]} ${LOOP}p${factorypart}
-		#mkdir -p $MOUNT/boot/
-		#mount ${LOOP}p${bootpart} $MOUNT/boot/
-		#echo "UUID=$(blkid -s UUID -o value ${LOOP}p${bootpart}) /boot ${mkfs[$bootfs]} defaults${mountopts[$bootfs]} 0 2" >> $SDCARD/etc/fstab
+		dd if=$SRC/packages/blobs/rda/factorydata.img of="${LOOP}p${factorypart}"
 	fi
 	if [[ -n $bootpart ]]; then
 		display_alert "Creating /boot" "$bootfs"
